@@ -34,23 +34,21 @@ class Movies extends Component {
     this.setState({ currentPage: page });
   };
   handleGenreSelect = (genre) => {
-    this.setState({ selectedItem: genre });
+    this.setState({ selectedItem: genre, currentPage: 1 });
+    console.log(this.state.selectedItem);
   };
 
   render() {
     const { length: count } = this.state.movies;
-    const {
-      movies: AllMovies,
-      genres,
-      currentPage,
-      pageSize,
-      selectedItem,
-    } = this.state;
+    const { movies, genres, currentPage, pageSize, selectedItem } = this.state;
 
     if (count === 0) return <p>There are no movies in the database.</p>;
 
-    const filtered = AllMovies.filter((m) => m.genre._id === selectedItem._id);
-    const movies = paginate(filtered, currentPage, pageSize);
+    const filtered =
+      selectedItem && selectedItem._id
+        ? movies.filter((m) => m.genre._id === selectedItem._id)
+        : movies;
+    const newMovies = paginate(filtered, currentPage, pageSize);
 
     return (
       <div className="row">
@@ -76,7 +74,7 @@ class Movies extends Component {
               </tr>
             </thead>
             <tbody>
-              {movies.map((movie) => (
+              {newMovies.map((movie) => (
                 <tr key={movie._id}>
                   <td>{movie.title}</td>
                   <td>{movie.genre.name}</td>
